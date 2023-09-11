@@ -2,9 +2,16 @@
     ViewBag.Title = "Home Page";
 }
 
+<style nonce="{nonce}">
+    .testStyle {
+        color: green
+    }
+</style>
+
 <script nonce="{nonce}">
     function test() {
-        console.log('test');
+        console.log('test 1');
+        eval("console.log('eval test')");
     }
 </script>
 
@@ -13,6 +20,13 @@
     <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
     <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
 </div>
+
+<button onclick="test();">Test 1 (calls method in inline script block which calls console.log and eval())</button>
+<button onclick="console.log('test 2');">Test 2 (directly calls console.log in onclick)</button>
+<button onclick="eval('console.log(1)')">Test 3 (calls eval('console.log(1)') in onclick)</button>
+<br />
+<div style="color:red">This uses an inline style defined in the style attribute</div>
+<div class="testStyle">This uses an inline style defined in an inline &lt;style&gt; block</div>
 
 <div class="row">
     <div class="col-md-4">
@@ -34,5 +48,4 @@
         <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
         <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
     </div>
-    <button onclick="test();">Test</button>
 </div>

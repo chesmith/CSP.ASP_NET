@@ -8,13 +8,11 @@ namespace CSP.ASP_NET
     {
         private Stream _originalStream;
         private string _nonce;
-        private ContentLengthContainer _contentLengthContainer;
 
-        public CaptureStreamFilter(Stream originalStream, string nonce, ContentLengthContainer contentLengthContainer)
+        public CaptureStreamFilter(Stream originalStream, string nonce)
         {
             _originalStream = originalStream;
             _nonce = nonce;
-            _contentLengthContainer = contentLengthContainer;
         }
 
         public override void Write(byte[] buffer, int offset, int count)
@@ -24,8 +22,6 @@ namespace CSP.ASP_NET
             string inputstring = Encoding.UTF8.GetString(data);
             data = Encoding.UTF8.GetBytes(inputstring.Replace("{nonce}", _nonce));
             _originalStream.Write(data, 0, count);
-
-            _contentLengthContainer.TotalContentLength += count;
         }
 
         public override bool CanRead => false;
@@ -61,10 +57,5 @@ namespace CSP.ASP_NET
         {
             throw new NotSupportedException();
         }
-    }
-
-    public class ContentLengthContainer
-    {
-        public long TotalContentLength { get; set; }
     }
 }

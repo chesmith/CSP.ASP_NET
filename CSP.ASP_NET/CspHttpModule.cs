@@ -7,7 +7,6 @@ namespace CSP.ASP_NET
     public class CspHttpModule : IHttpModule
     {
         private string _nonce;
-        private ContentLengthContainer _contentLengthContainer = new ContentLengthContainer();
 
         public void Init(HttpApplication context)
         {
@@ -28,7 +27,17 @@ namespace CSP.ASP_NET
             HttpContext context = app.Context;
 
             // Set your CSP policy with the nonce
-            string cspPolicy = $"default-src 'self' 'nonce-{_nonce}'; script-src-attr 'unsafe-inline'; style-src 'self' 'unsafe-inline'";
+            //string cspPolicy = $"default-src 'self' 'nonce-{_nonce}'; script-src-attr 'unsafe-inline'; style-src 'self' 'unsafe-inline'";
+            string cspPolicy = $"default-src 'self'; " +
+				$"script-src 'self' 'unsafe-eval'; " +
+				$"script-src-elem 'self' 'nonce-{_nonce}' www.scripthost.com; " +
+				$"script-src-attr 'unsafe-inline'; " +
+				$"style-src 'self'; " +
+                $"style-src-elem 'self' 'nonce-{_nonce}' www.stylehost.com;" +
+				$"style-src-attr 'unsafe-inline'; " +
+				$"object-src 'none'; " +
+                $"frame-ancestors 'self'; " +
+                $"frame-src 'self';";
 
             // Add CSP header to the response
             context.Response.Headers.Add("Content-Security-Policy", cspPolicy);
@@ -50,18 +59,7 @@ namespace CSP.ASP_NET
             HttpContext context = app.Context;
 
             // Capture and modify the response content
-            context.Response.Filter = new CaptureStreamFilter(context.Response.Filter, _nonce, _contentLengthContainer);
-            //context.Response.Filter = CaptureResponseStream(context.Response, context.Response.Filter);
-            System.Diagnostics.Debug.WriteLine(_contentLengthContainer.TotalContentLength);
-            //context.Response.Headers["Content-Length"] = _contentLengthContainer.TotalContentLength.ToString();
+            context.Response.Filter = new CaptureStreamFilter(context.Response.Filter, _nonce);
         }
-
-        //private Stream CaptureResponseStream(HttpResponse response, Stream originalStream)
-        //{
-        //    Stream captureStream = new MemoryStream();
-        //    //response.Filter = new CaptureStreamFilter(originalStream, captureStream, _nonce);
-        //    response.Filter = new SimpleStreamFilter(originalStream);
-        //    return captureStream;
-        //}
     }
 }
